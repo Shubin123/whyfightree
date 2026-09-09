@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # Chrome ships on the GitHub runner image, so the browser smoke test that
+      # catches WebGL and wiring regressions runs on every push, not just locally.
+      - name: Serve the build
+        run: npx vite preview --port 4173 --strictPort &
+
+      - name: Smoke test
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          for _ in $(seq 1 60); do
+            curl -sfo /dev/null http://localhost:4173/ && break
+            sleep 1
+          done
+          npm run smoke -- http://localhost:4173/
+
+      - name: Upload smoke screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshot
+          path: artifacts/smoke.png
+          if-no-files-found: ignore
