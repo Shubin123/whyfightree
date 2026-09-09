@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>whyfightree — 3D burn severity map</title>
+    <meta
+      name="description"
+      content="A three.js burn map: forest terrain shaded by dNBR burn severity, built from satellite, aerial or lidar data."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E"
+    />
+    <script type="module" crossorigin src="./assets/index-DK6BSVF5.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-pBGf7_Bq.css">
+  </head>
+  <body>
+    <div id="app">
+      <aside class="panel" aria-label="Map controls">
+        <header class="panel__header">
+          <h1>whyfightree</h1>
+          <p class="panel__subtitle">3D burn severity map of a forest area</p>
+        </header>
+
+        <section class="section">
+          <h2 class="section__title">Data source</h2>
+          <label class="field">
+            <span class="field__label" for="source-select">Sample dataset</span>
+            <select id="source-select"></select>
+          </label>
+          <p class="source-summary" id="source-summary"></p>
+          <dl class="meta" id="source-meta"></dl>
+          <div class="import">
+            <label class="button button--ghost" for="import-input">
+              Import raster…
+              <input id="import-input" type="file" accept=".json,.csv,.txt" hidden />
+            </label>
+            <a class="link" id="download-template" href="./sample.burnmap.json" download>
+              Format template
+            </a>
+          </div>
+          <p class="import__hint">
+            Drop a <code>burnmap/v1</code> JSON or a dNBR CSV anywhere on the map.
+          </p>
+          <p class="import__error" id="import-error" role="alert" hidden></p>
+        </section>
+
+        <section class="section">
+          <h2 class="section__title">Display</h2>
+          <div class="segmented" id="color-mode" role="group" aria-label="Colour mode"></div>
+
+          <label class="field">
+            <span class="field__label">
+              Vertical exaggeration <output id="exaggeration-value">2.0×</output>
+            </span>
+            <input id="exaggeration" type="range" min="1" max="6" step="0.1" value="2" />
+          </label>
+
+          <label class="field">
+            <span class="field__label"
+              >Sun bearing <output id="sun-azimuth-value">315°</output></span
+            >
+            <input id="sun-azimuth" type="range" min="0" max="359" step="1" value="315" />
+          </label>
+
+          <label class="field">
+            <span class="field__label"
+              >Sun altitude <output id="sun-altitude-value">42°</output></span
+            >
+            <input id="sun-altitude" type="range" min="5" max="85" step="1" value="42" />
+          </label>
+
+          <label class="checkbox">
+            <input id="show-perimeter" type="checkbox" checked />
+            <span>Fire perimeter (dNBR 0.10)</span>
+          </label>
+        </section>
+
+        <section class="section">
+          <h2 class="section__title">Burn severity</h2>
+          <p class="section__hint">Click a class to isolate it on the surface.</p>
+          <ul class="legend" id="legend"></ul>
+          <dl class="totals" id="totals"></dl>
+        </section>
+
+        <section class="section section--actions">
+          <button class="button" id="reset-view" type="button">Reset view</button>
+          <button class="button" id="export-png" type="button">Export PNG</button>
+          <button class="button" id="export-json" type="button">Export JSON</button>
+        </section>
+
+        <footer class="panel__footer">
+          <a class="link" href="https://github.com/Shubin123/whyfightree">Source on GitHub</a>
+        </footer>
+      </aside>
+
+      <main class="viewport" id="viewport">
+        <div class="hud" id="hud" hidden>
+          <div class="hud__row"><span>Elevation</span><strong id="hud-elevation">—</strong></div>
+          <div class="hud__row"><span>dNBR</span><strong id="hud-dnbr">—</strong></div>
+          <div class="hud__row"><span>Class</span><strong id="hud-class">—</strong></div>
+          <div class="hud__row"><span>Position</span><strong id="hud-position">—</strong></div>
+        </div>
+        <div class="dropzone" id="dropzone" hidden><span>Drop raster to load</span></div>
+        <div class="loading" id="loading"><span class="loading__dot"></span>Building terrain…</div>
+      </main>
+    </div>
+
+  </body>
+</html>
