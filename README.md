@@ -1,5 +1,4 @@
 # whyfightree
-
 A three.js burn map: a 3D terrain model of a forest area shaded by **burn severity**, so
 the extent and intensity of fire damage can be read at a glance.
 
